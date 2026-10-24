@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-10-2026 a las 02:58:00
+-- Tiempo de generación: 24-10-2026 a las 05:09:52
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,18 +29,38 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `cliente` (
   `id_cliente` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `dni` char(8) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL
+  `observacion` varchar(255) DEFAULT NULL,
+  `fecha_registro` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `cliente`
 --
 
-INSERT INTO `cliente` (`id_cliente`, `nombre`, `dni`, `telefono`, `correo`) VALUES
-(1, 'Maria Gomez', '72839401', '987654321', 'maria@gmail.com');
+INSERT INTO `cliente` (`id_cliente`, `observacion`, `fecha_registro`) VALUES
+(1, 'Prefiere tintes sin amoníaco', '2026-10-23');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `persona`
+--
+
+CREATE TABLE `persona` (
+  `id_persona` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `dni` char(8) NOT NULL,
+  `telefono` char(9) NOT NULL,
+  `correo` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `persona`
+--
+
+INSERT INTO `persona` (`id_persona`, `nombre`, `dni`, `telefono`, `correo`) VALUES
+(1, 'Maria Gomez', '72839401', '987654321', 'maria@gmail.com'),
+(2, 'Lucia Fernandez', '61524387', '912345678', 'lucia@salon.com');
 
 -- --------------------------------------------------------
 
@@ -74,10 +94,6 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `tipo_producto`, `precio_compra
 
 CREATE TABLE `trabajadora` (
   `id_trabajadora` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `dni` char(8) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL,
   `especialidad` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -85,8 +101,8 @@ CREATE TABLE `trabajadora` (
 -- Volcado de datos para la tabla `trabajadora`
 --
 
-INSERT INTO `trabajadora` (`id_trabajadora`, `nombre`, `dni`, `telefono`, `correo`, `especialidad`) VALUES
-(1, 'Lucia Fernandez', '61524387', '912345678', 'lucia@salon.com', 'Manicure y Pedicure');
+INSERT INTO `trabajadora` (`id_trabajadora`, `especialidad`) VALUES
+(2, 'Manicure y Pedicure');
 
 --
 -- Índices para tablas volcadas
@@ -96,7 +112,13 @@ INSERT INTO `trabajadora` (`id_trabajadora`, `nombre`, `dni`, `telefono`, `corre
 -- Indices de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`id_cliente`),
+  ADD PRIMARY KEY (`id_cliente`);
+
+--
+-- Indices de la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD PRIMARY KEY (`id_persona`),
   ADD UNIQUE KEY `dni` (`dni`);
 
 --
@@ -109,18 +131,17 @@ ALTER TABLE `producto`
 -- Indices de la tabla `trabajadora`
 --
 ALTER TABLE `trabajadora`
-  ADD PRIMARY KEY (`id_trabajadora`),
-  ADD UNIQUE KEY `dni` (`dni`);
+  ADD PRIMARY KEY (`id_trabajadora`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT de la tabla `cliente`
+-- AUTO_INCREMENT de la tabla `persona`
 --
-ALTER TABLE `cliente`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `persona`
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
@@ -129,10 +150,20 @@ ALTER TABLE `producto`
   MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `trabajadora`
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD CONSTRAINT `fk_cliente_persona` FOREIGN KEY (`id_cliente`) REFERENCES `persona` (`id_persona`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `trabajadora`
 --
 ALTER TABLE `trabajadora`
-  MODIFY `id_trabajadora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  ADD CONSTRAINT `fk_trabajadora_persona` FOREIGN KEY (`id_trabajadora`) REFERENCES `persona` (`id_persona`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
