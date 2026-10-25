@@ -1,9 +1,11 @@
 import Controller.GestorCliente;
 import dao.ClienteDao;
 import dao.ProductoDao;
+import dao.TrabajadoraDao;
 import database.Conexion;
 import model.Cliente;
 import model.Producto;
+import model.Trabajadora;
 
 import java.sql.Connection;
 import java.util.List;
@@ -24,6 +26,7 @@ public class Main {
         ClienteDao clienteDao = new ClienteDao(conexion);
         GestorCliente gestorCliente = new GestorCliente(clienteDao);
         ProductoDao productoDao = new ProductoDao(conexion);
+        TrabajadoraDao trabajadoraDao = new TrabajadoraDao(conexion);
 
         int opcionPrincipal = 0;
 
@@ -53,7 +56,7 @@ public class Main {
                     menuClientes(scanner, gestorCliente);
                     break;
                 case 3:
-                    menuTrabajadoras(scanner);
+                    menuTrabajadoras(scanner, trabajadoraDao);
                     break;
                 case 4:
                     System.out.println("SALIENDO DEL SISTEMA. HASTA LUEGO");
@@ -285,34 +288,99 @@ public class Main {
         } while (op != 6);
     }
 
-    private static void menuTrabajadoras(Scanner scanner) {
-        int op;
-        do {
-            System.out.println("SUBMENÚ: GESTIÓN DE TRABAJADORAS ");
-            System.out.println("1. REGISTRAR TRABAJADORA");
-            System.out.println("2. LISTAR TRABAJADORAS");
-            System.out.println("3. BUSCAR TRABAJADORA");
-            System.out.println("4. ACTUALIZAR TRABAJADORA");
-            System.out.println("5. ELIMINAR TRABAJADORA");
-            System.out.println("6. VOLVER AL MENU PRINCIPAL");
-            System.out.println("INGRESE UNA OPCION: ");
-            op = scanner.nextInt();
-            scanner.nextLine();
+    private static void menuTrabajadoras(Scanner scanner, TrabajadoraDao trabajadoraDao) {
+            int op = 0;
+            do {
+                System.out.println("SUBMENÚ: GESTIÓN DE TRABAJADORAS ");
+                System.out.println("1. REGISTRAR TRABAJADORA");
+                System.out.println("2. LISTAR TRABAJADORAS");
+                System.out.println("3. BUSCAR TRABAJADORA POR ID");
+                System.out.println("4. ACTUALIZAR TRABAJADORA");
+                System.out.println("5. ELIMINAR TRABAJADORA");
+                System.out.println("6. VOLVER AL MENU PRINCIPAL");
+                System.out.println("INGRESE UNA OPCION: ");
 
-            switch (op) {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    System.out.println("[MÓDULO TRABAJADORAS] Operación simulada.");
-                    break;
-                case 6:
-                    System.out.println("REGRESANDO AL MENU PRINCIPAL>>");
-                    break;
-                default:
-                    System.out.println("OPCION INVALIDA.");
-            }
-        } while (op != 6);
-    }
+                if (scanner.hasNextInt()) {
+                    op = scanner.nextInt();
+                    scanner.nextLine();
+                } else {
+                    System.out.println("ENTRADA INVALIDA.");
+                    scanner.nextLine();
+                    continue;
+                }
+
+                switch (op) {
+                    case 1:
+                        System.out.println("REGISTRAR TRABAJADORA");
+                        System.out.println("ID de Persona: ");
+                        int idPersona = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Especialidad: ");
+                        String especialidad = scanner.nextLine();
+
+                        Trabajadora nuevaTrabajadora = new Trabajadora(idPersona, "Temp", "00000000", "900000000", "temp@salon.com", especialidad);
+                        trabajadoraDao.registrar(nuevaTrabajadora);
+                        break;
+
+                    case 2:
+                        System.out.println("LISTA DE TRABAJADORAS");
+                        List<Trabajadora> lista = trabajadoraDao.listarTrabajadoras();
+                        if (lista.isEmpty()) {
+                            System.out.println("No hay trabajadoras registradas en el sistema.");
+                        } else {
+                            for (Trabajadora t : lista) {
+                                t.imprimirInformacion();
+                                System.out.println();
+                            }
+                        }
+                        break;
+
+                    case 3:
+                        System.out.println("BUSCAR TRABAJADORA POR ID");
+                        System.out.println("Ingrese ID de la trabajadora: ");
+                        int idBusc = scanner.nextInt();
+                        scanner.nextLine();
+                        Trabajadora tEncontrada = trabajadoraDao.buscarPorId(idBusc);
+                        if (tEncontrada != null) {
+                            System.out.println("Trabajadora encontrada:");
+                            tEncontrada.imprimirInformacion();
+                        } else {
+                            System.out.println("Trabajadora con ID " + idBusc + " no encontrado.");
+                        }
+                        break;
+
+                    case 4:
+                        System.out.println("ACTUALIZAR TRABAJADORA");
+                        System.out.println("Ingrese el ID de la trabajadora a modificar: ");
+                        int idMod = scanner.nextInt();
+                        scanner.nextLine();
+                        Trabajadora tMod = trabajadoraDao.buscarPorId(idMod);
+                        if (tMod != null) {
+                            System.out.println("Nueva especialidad: ");
+                            String nuevaEsp = scanner.nextLine();
+                            tMod.setEspecialidad(nuevaEsp);
+                            trabajadoraDao.actualizar(tMod);
+                            System.out.println("La especialidad se ha modificado con éxito");
+                        } else {
+                            System.out.println("Trabajadora con ID " + idMod + " no encontrado.");
+                        }
+                        break;
+
+                    case 5:
+                        System.out.println("ELIMINAR TRABAJADORA");
+                        System.out.println("Ingrese ID de la trabajadora a eliminar: ");
+                        int idElim = scanner.nextInt();
+                        scanner.nextLine();
+                        trabajadoraDao.eliminar(idElim);
+                        break;
+
+                    case 6:
+                        System.out.println("REGRESANDO AL MENU PRINCIPAL>>");
+                        break;
+
+                    default:
+                        System.out.println("OPCION NO VALIDA.");
+                }
+            } while (op != 6);
+        }
 }
