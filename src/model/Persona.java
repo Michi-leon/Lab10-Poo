@@ -1,5 +1,4 @@
 package model;
-
 public abstract class Persona {
     private int idPersona;
     private String nombre;
