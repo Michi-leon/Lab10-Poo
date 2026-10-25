@@ -1,7 +1,6 @@
 package dao;
 import model.Cliente;
 import java.sql.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,17 +13,12 @@ public class ClienteDao {
 
     // 1. REGISTRAR:
     public void registrar(Cliente cliente) {
-        String query = "INSERT INTO clientes (id_persona, nombre, dni, telefono, correo, id_cliente, observacion, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO cliente (id_cliente, observacion, fecha_registro) VALUES (?, ?, ?)";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, cliente.getIdPersona());
-            ps.setString(2, cliente.getNombre());
-            ps.setString(3, cliente.getDni());
-            ps.setString(4, cliente.getTelefono());
-            ps.setString(5, cliente.getCorreo());
-            ps.setInt(6, cliente.getIdCliente());
-            ps.setString(7, cliente.getObservacion());
-            ps.setDate(8, Date.valueOf(cliente.getFechaRegistro()));
+             ps.setInt(1, cliente.getIdCliente());
+            ps.setString(2, cliente.getObservacion());
+            ps.setDate(3, Date.valueOf(cliente.getFechaRegistro()));
 
             int filas = ps.executeUpdate();
             System.out.println("Cliente registrado");
@@ -37,8 +31,7 @@ public class ClienteDao {
     //2.Listar:
     public List<Cliente> listarClientes() {
         List<Cliente> lista = new ArrayList<>();
-        String query = "SELECT * FROM clientes";
-
+        String query = "SELECT p.id_persona, p.nombre, p.dni, p.telefono, p.correo, c.id_cliente, c.observacion, c.fecha_registro FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona";
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -66,7 +59,7 @@ public class ClienteDao {
 
     // 3. BUSCAR POR ID:
     public Cliente buscarPorId(int idClienteBuscar) {
-        String query = "SELECT * FROM clientes WHERE id_cliente = ?";
+        String query = "SELECT p.id_persona, p.nombre, p.dni, p.telefono, p.correo, c.id_cliente, c.observacion, c.fecha_registro FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona WHERE c.id_cliente = ?";
         Cliente cliente = null;
 
         try {
@@ -96,7 +89,7 @@ public class ClienteDao {
 
     // 4. ACTUALIZAR:
     public void actualizar(Cliente cliente) {
-        String query = "UPDATE clientes SET nombre = ?, telefono = ?, correo = ?, observacion = ? WHERE id_cliente = ?";
+        String query = "UPDATE cliente SET observacion = ? WHERE id_cliente = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, cliente.getNombre());
@@ -114,7 +107,7 @@ public class ClienteDao {
 
     // 5. ELIMINAR: 
     public void eliminar(int idClienteEliminar) {
-        String query = "DELETE FROM clientes WHERE id_cliente = ?";
+        String query = "DELETE FROM cliente WHERE id_cliente = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setInt(1, idClienteEliminar);
