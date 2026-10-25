@@ -44,7 +44,7 @@ public class ClienteDao {
                 String correo = resultSet.getString("correo");
                 int idCliente = resultSet.getInt("id_cliente");
                 String observacion = resultSet.getString("observacion");
-                String fechaBonita = resultSet.getString("fecha_texto");
+                String fechaBonita = resultSet.getString("fecha_registro");
                 
                 Cliente cliente = new Cliente(idPersona, nombre, dni, telefono, correo, idCliente, observacion, fechaBonita);
                 lista.add(cliente);
@@ -75,7 +75,7 @@ public class ClienteDao {
                 String correo = resultSet.getString("correo");
                 int idCliente = resultSet.getInt("id_cliente");
                 String observacion = resultSet.getString("observacion");
-                String fechaBonita = resultSet.getString("fecha_texto");
+                String fechaBonita = resultSet.getString("fecha_registro");
 
                 cliente = new Cliente(idPersona, nombre, dni, telefono, correo, idCliente, observacion, fechaBonita);
             }
@@ -92,11 +92,8 @@ public class ClienteDao {
         String query = "UPDATE cliente SET observacion = ? WHERE id_cliente = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, cliente.getNombre());
-            ps.setString(2, cliente.getTelefono());
-            ps.setString(3, cliente.getCorreo());
-            ps.setString(4, cliente.getObservacion());
-            ps.setInt(5, cliente.getIdCliente());
+            ps.setString(1, cliente.getObservacion());
+            ps.setInt(2, cliente.getIdCliente());
 
             ps.executeUpdate();
             ps.close();
