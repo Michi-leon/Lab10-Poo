@@ -315,10 +315,18 @@ public class Main {
                         System.out.println("ID de Persona: ");
                         int idPersona = scanner.nextInt();
                         scanner.nextLine();
+                        System.out.println("Nombre completo: ");
+                        String nombre = scanner.nextLine();
+                        System.out.println("DNI (8 dígitos max): ");
+                        String dni = scanner.nextLine();
+                        System.out.println("Teléfono (9 dígitos max): ");
+                        String telefono = scanner.nextLine();
+                        System.out.println("Correo electrónico: ");
+                        String correo = scanner.nextLine();
                         System.out.println("Especialidad: ");
                         String especialidad = scanner.nextLine();
 
-                        Trabajadora nuevaTrabajadora = new Trabajadora(idPersona, "Temp", "00000000", "900000000", "temp@salon.com", especialidad);
+                        Trabajadora nuevaTrabajadora = new Trabajadora(idPersona, nombre, dni, telefono, correo, especialidad);
                         trabajadoraDao.registrar(nuevaTrabajadora);
                         break;
 

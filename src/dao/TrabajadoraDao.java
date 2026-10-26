@@ -14,18 +14,31 @@ public class TrabajadoraDao {
 
     // 1. REGISTRAR
     public void registrar(Trabajadora t) {
-        String query = "INSERT INTO trabajadora (id_trabajadora, especialidad) VALUES (?, ?)";
+        String queryPersona = "INSERT INTO persona (id_persona, nombre, dni, telefono, correo) VALUES (?, ?, ?, ?, ?)";
+        String queryTrabajadora = "INSERT INTO trabajadora (id_trabajadora, especialidad) VALUES (?, ?)";
+        
         try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, t.getIdPersona()); // Hereda el ID de Persona
-            ps.setString(2, t.getEspecialidad());
+            // INSERTAR PERSONA
+            PreparedStatement psP = connection.prepareStatement(queryPersona);
+            psP.setInt(1, t.getIdPersona());
+            psP.setString(2, t.getNombre());
+            psP.setString(3, t.getDni());
+            psP.setString(4, t.getTelefono());
+            psP.setString(5, t.getCorreo());
+            psP.executeUpdate();
+            psP.close();
 
-            int filas = ps.executeUpdate();
+            // insertar Trabajadora
+            PreparedStatement psT = connection.prepareStatement(queryTrabajadora);
+            psT.setInt(1, t.getIdPersona()); // Comparte exactamente el mismo ID heredado
+            psT.setString(2, t.getEspecialidad());
+            psT.executeUpdate();
+            psT.close();
+
             System.out.println("Trabajadora registrada");
-            System.out.println(" Filas insertadas: " + filas);
-            ps.close();
+            System.out.println(" Filas insertadas correctamente en ambas tablas.");
         } catch (SQLException e) {
-            System.out.println("Error en INSERT de trabajadora: " + e.getMessage());
+            System.out.println("Error en INSERT de trabajadora compuesta: " + e.getMessage());
         }
     }
 
@@ -87,14 +100,24 @@ public class TrabajadoraDao {
 
     // 4. ACTUALIZAR
     public void actualizar(Trabajadora t) {
-        String query = "UPDATE trabajadora SET especialidad = ? WHERE id_trabajadora = ?";
+        String queryPersona = "UPDATE persona SET nombre = ?, telefono = ?, correo = ? WHERE id_persona = ?";
+        String queryTrabajadora = "UPDATE trabajadora SET especialidad = ? WHERE id_trabajadora = ?";
         try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, t.getEspecialidad());
-            ps.setInt(2, t.getIdPersona());
+            // persona
+            PreparedStatement psP = connection.prepareStatement(queryPersona);
+            psP.setString(1, t.getNombre());
+            psP.setString(2, t.getTelefono());
+            psP.setString(3, t.getCorreo());
+            psP.setInt(4, t.getIdPersona());
+            psP.executeUpdate();
+            psP.close();
 
-            ps.executeUpdate();
-            ps.close();
+            // trabajadora
+            PreparedStatement psT = connection.prepareStatement(queryTrabajadora);
+            psT.setString(1, t.getEspecialidad());
+            psT.setInt(2, t.getIdPersona());
+            psT.executeUpdate();
+            psT.close();
         } catch (SQLException e) {
             System.out.println("Error al actualizar trabajadora en BD: " + e.getMessage());
         }

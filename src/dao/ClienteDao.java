@@ -13,19 +13,32 @@ public class ClienteDao {
 
     // 1. REGISTRAR:
     public void registrar(Cliente cliente) {
-        String query = "INSERT INTO cliente (id_cliente, observacion, fecha_registro) VALUES (?, ?, ?)";
+        String queryPersona = "INSERT INTO persona (id_persona, nombre, dni, telefono, correo) VALUES (?, ?, ?, ?, ?)";
+        String queryCliente = "INSERT INTO cliente (id_cliente, observacion, fecha_registro) VALUES (?, ?, ?)";
+        
         try {
-            PreparedStatement ps = connection.prepareStatement(query);
-             ps.setInt(1, cliente.getIdCliente());
-            ps.setString(2, cliente.getObservacion());
-            ps.setDate(3, Date.valueOf(cliente.getFechaRegistro()));
+            // Insertar PERSONA
+            PreparedStatement psP = connection.prepareStatement(queryPersona);
+            psP.setInt(1, cliente.getIdPersona());
+            psP.setString(2, cliente.getNombre());
+            psP.setString(3, cliente.getDni());
+            psP.setString(4, cliente.getTelefono());
+            psP.setString(5, cliente.getCorreo());
+            psP.executeUpdate();
+            psP.close();
 
-            int filas = ps.executeUpdate();
+            // Insertar CLIENTE
+            PreparedStatement psC = connection.prepareStatement(queryCliente);
+            psC.setInt(1, cliente.getIdCliente()); // Comparte exactamente el mismo ID
+            psC.setString(2, cliente.getObservacion());
+            psC.setDate(3, Date.valueOf(cliente.getFechaRegistro()));
+            psC.executeUpdate();
+            psC.close();
+
             System.out.println("Cliente registrado");
-            System.out.println(" Filas insertadas: " + filas);
-            ps.close();
+            System.out.println(" Filas insertadas correctamente en ambas tablas");
         } catch (SQLException e) {
-            System.out.println("Error en INSERT de cliente: " + e.getMessage());
+            System.out.println("Error en INSERT de cliente compuesto: " + e.getMessage());
         }
     }
     //2.Listar:
@@ -89,14 +102,24 @@ public class ClienteDao {
 
     // 4. ACTUALIZAR:
     public void actualizar(Cliente cliente) {
-        String query = "UPDATE cliente SET observacion = ? WHERE id_cliente = ?";
+        String queryPersona = "UPDATE persona SET nombre = ?, telefono = ?, correo = ? WHERE id_persona = ?";
+        String queryCliente = "UPDATE cliente SET observacion = ? WHERE id_cliente = ?";
         try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, cliente.getObservacion());
-            ps.setInt(2, cliente.getIdCliente());
+            // PERSONA
+            PreparedStatement psP = connection.prepareStatement(queryPersona);
+            psP.setString(1, cliente.getNombre());
+            psP.setString(2, cliente.getTelefono());
+            psP.setString(3, cliente.getCorreo());
+            psP.setInt(4, cliente.getIdPersona());
+            psP.executeUpdate();
+            psP.close();
 
-            ps.executeUpdate();
-            ps.close();
+            // CLIENTE
+            PreparedStatement psC = connection.prepareStatement(queryCliente);
+            psC.setString(1, cliente.getObservacion());
+            psC.setInt(2, cliente.getIdCliente());
+            psC.executeUpdate();
+            psC.close();
         } catch (SQLException e) {
             System.out.println("Error al actualizar cliente en BD: " + e.getMessage());
         }
